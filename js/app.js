@@ -18,6 +18,11 @@ $(function () {
         }
     });
 
+    tbody.on("click", "td button", function (e) {
+        e.stopPropagation();
+        deleteBook($(this).data("id"), tbody);
+    });
+
 
 });
 
@@ -38,14 +43,14 @@ function downloadBooks(table) {
 function showBook(table, book) {
     console.log(book);
     let row = $(`<tr data-id="${book.id}">
-                    <th scope="row">${book.id}</th>
-                    <td>${book.title}</td>
-                    <td>${book.isbn}</td>
-                    <td>
-                        <button class="btn btn-outline-dark" data-id =${book.id}>Usuń</button>
-                    </td>
-                </tr>
-                <tr><td colspan="4" class="bookDetails"></td></tr>
+                        <th scope="row">${book.id}</th>
+                        <td>${book.title}</td>
+                        <td>${book.isbn}</td>
+                        <td>
+                            <button class="btn btn-outline-dark" data-id =${book.id}>Usuń</button>
+                        </td>
+                        </tr>
+                        <tr><td colspan="4" class="bookDetails"></td></tr>
 `);
     table.append(row);
     table.find('.bookDetails').slideUp();
@@ -62,15 +67,16 @@ function downloadBookDetails(div, id) {
     })
 }
 
-function showBookDetails(div, book) {
+function showBookDetails(detailsRow, book) {
     let details = $(`<div>
-                        <p>Autor: ${book.author}</p>
-                        <p>Wydawca: ${book.publisher}</p>
-                        <p>Typ: ${book.type}</p>
-                        </div>`);
-
-    $(div).children().eq(0).html(details);
-    $(div).children().slideToggle(1000);
+                            <ul class="list-inline">
+                                <li class="list-inline-item">Autor: ${book.author}</li>
+                                <li class="list-inline-item">Wydawca: ${book.publisher}</li>
+                                <li class="list-inline-item">Typ: ${book.type}</li>
+                            </ul>
+                           </div>`);
+    $(detailsRow).children().eq(0).html(details);
+    $(detailsRow).children().slideToggle(1000);
 }
 
 function addBook(form, tbody) {
@@ -101,6 +107,15 @@ function formValidation(form) {
         }
     }
     return true;
+}
+
+function deleteBook(id, tbody) {
+    $.ajax({
+        url: "http://localhost:8282/books/" + id,
+        method: "DELETE"
+    }).done(function (response) {
+        downloadBooks(tbody);
+    });
 }
 
 
